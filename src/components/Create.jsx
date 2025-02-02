@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { useNavigate } from "react-router-dom"; 
 import toast from 'react-hot-toast';
+import cors from 'cors';
 
 function Create() {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ function Create() {
             "password": pass,
             "profile_picture": ""
         };
-        const response = await fetch("http://localhost:8000/register", {
+        const response = await fetch("/api/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
