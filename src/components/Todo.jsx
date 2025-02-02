@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import toast from 'react-hot-toast';
 import { useState,useEffect } from 'react';
 
-export function Todo({ title, is_completed, priority, id, updateTodos }) {
+export function Todo({ title, is_completed, priority, id, updateTodos,deadline }) {
     const [completed, setCompleted] = useState(is_completed);
     const [remainingTime, setRemainingTime] = useState('');
     async function deleteClick() {
@@ -39,12 +39,18 @@ export function Todo({ title, is_completed, priority, id, updateTodos }) {
           console.error('Failed to update todo', error);
         }
       }
+      const formattedDeadline = (deadline && !isNaN(Date.parse(deadline)))
+    ? new Date(deadline).toISOString() // This will keep the 'Z' for UTC
+    : "Invalid Date";
+
     return <div style={{ padding: "20px", margin: "10px", border: "1px solid black", borderRadius: "10px", backgroundColor: priority > 8 ? "rgba(255,0,0,0.3)" : "rgba(0,255,0,0.3)"}}>
         <div style={{fontSize: "30px", textDecoration: is_completed ? "line-through": ""}}>
             {is_completed ? "✅" : "⌛"}
-            {title}
+            {title}<br/>
+           <p >Priority: {priority}</p> 
         </div>
         <div style={{display:'flex', width:'100%', justifyContent:"end"}}>
+          
         <div onClick={toggleComplete} style={{ fontSize: "20px", cursor: "pointer", marginRight: "10px",backgroundColor:"darkblue", color:"white", padding:"5px", borderRadius:"5px" }}>
               {completed ? "Undo" : "Complete"}
             </div>

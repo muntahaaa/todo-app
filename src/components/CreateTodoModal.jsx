@@ -20,12 +20,13 @@ export function CreateTodoModal({ updateTodos }) {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [priority, setPriority] = useState("0");
+    const [deadline, setDeadline] = useState("");
 
     async function createTodoClick() {
         const body = {
             "title": title,
             "description": "string",
-            "deadline": "2025-01-29T16:34:37.131Z",
+            "deadline": deadline,
             "priority": parseInt(priority)
         };
         const r = await fetch("http://3.109.211.104:8001/todo", {
@@ -35,12 +36,14 @@ export function CreateTodoModal({ updateTodos }) {
             },
             body: JSON.stringify(body)
         });
+        console.log(body);
         const j = await r.json();
         console.log(j);
         toast.success("Todo created");
         setTitle("");
         setPriority("");
         setIsOpen(false);
+        setDeadline("");
         updateTodos();
     }
     return <div>
@@ -57,6 +60,15 @@ export function CreateTodoModal({ updateTodos }) {
                     <TextField placeholder='Priority'  value={priority} onChange={e => setPriority(e.target.value)}/>
                     <br/>
                     <br/>
+                    <TextField
+                placeholder="Deadline"
+                type="datetime-local"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                fullWidth
+            />
+                 <br/>
+                 <br/>    
                     <Button onClick={createTodoClick} fullWidth variant="contained" size="large">Create</Button>
                 </div>
             </div>
