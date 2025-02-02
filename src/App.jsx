@@ -6,6 +6,7 @@ import { Home } from "./components/Home";
 import { Dashboard } from "./components/Dashboard";
 import { Toaster } from 'react-hot-toast';
 
+
 function App() {
   return <>
   <Router>
@@ -14,6 +15,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Create />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      {/* <Route path="/profile" element={<Profile />} /> */}
     </Routes>
   </Router>
   <Toaster/>

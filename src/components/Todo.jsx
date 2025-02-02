@@ -26,7 +26,7 @@ export function Todo({ title, is_completed, priority, id, updateTodos,deadline }
             body: JSON.stringify({
               title: title,
               description: 'string', // Replace with actual description if available
-              deadline: "2025-01-29T16:34:37.131Z", // Convert deadline to ISO string format
+              deadline: new Date(deadline), // Convert deadline to ISO string format
               priority: priority,
               is_completed: !completed
             })
@@ -39,8 +39,33 @@ export function Todo({ title, is_completed, priority, id, updateTodos,deadline }
           console.error('Failed to update todo', error);
         }
       }
+
+      useEffect(() => {
+        const calculateRemainingTime = () => {
+          const deadlineDate = new Date(deadline);
+          const currentDate = new Date();
+          const timeDifference = deadlineDate - currentDate;
+    
+          if (timeDifference > 0) {
+            const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+            setRemainingTime(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+          } else {
+            setRemainingTime('Time is up');
+          }
+        };
+    
+        calculateRemainingTime();
+        const interval = setInterval(calculateRemainingTime, 1000);
+    
+        return () => clearInterval(interval);
+      }, [deadline]);
+
+
       const formattedDeadline = (deadline && !isNaN(Date.parse(deadline)))
-    ? new Date(deadline).toISOString() // This will keep the 'Z' for UTC
+    ? new Date(deadline).toISOString()
     : "Invalid Date";
 
     return <div style={{ padding: "20px", margin: "10px", border: "1px solid black", borderRadius: "10px", backgroundColor: priority > 8 ? "rgba(255,0,0,0.3)" : "rgba(0,255,0,0.3)"}}>
@@ -50,6 +75,9 @@ export function Todo({ title, is_completed, priority, id, updateTodos,deadline }
            <p >Priority: {priority}</p> 
         </div>
         <div style={{display:'flex', width:'100%', justifyContent:"end"}}>
+        <div style={{ fontSize: "20px", marginRight: "10px" }}>
+          {remainingTime}
+        </div>
           
         <div onClick={toggleComplete} style={{ fontSize: "20px", cursor: "pointer", marginRight: "10px",backgroundColor:"darkblue", color:"white", padding:"5px", borderRadius:"5px" }}>
               {completed ? "Undo" : "Complete"}
