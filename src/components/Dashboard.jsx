@@ -14,6 +14,7 @@ export function Dashboard() {
     const [todolist, setTodoList] = useState([]);
     const [search, setSearch] = useState("");
     const [priorityVal, setPriorityVal] = useState("");
+    const [sortCriteria, setSortCriteria] = useState(''); 
 
     async function getTodos() {
         const r = await fetch("http://3.109.211.104:8001/todos");
@@ -32,6 +33,7 @@ export function Dashboard() {
         toast.success("Logged out successfully");
         navigate("/login");
     }
+
     function filterTodos() {
         return todolist.filter(todo => {
             const matchesSearch = todo.title.toLowerCase().includes(search.toLowerCase());
@@ -39,6 +41,27 @@ export function Dashboard() {
             return matchesSearch && matchesPriority;
         });
     }
+
+    const sortTodos = (todos) => {
+        return todos.sort((a, b) => {
+            switch (sortCriteria) {
+                case 'creationTime':
+                    return new Date(a.creationTime) - new Date(b.creationTime);
+                case 'deadline':
+                    return new Date(a.deadline) - new Date(b.deadline);
+                case 'priority':
+                    return b.priority - a.priority;
+                default:
+                    return 0;
+            }
+        });
+    };
+
+    function handleSortChange(event) {
+        setSortCriteria(event.target.value);
+    }
+
+    const filteredAndSortedTodos = sortTodos(filterTodos()); // First filter, then sort
 
     return <>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
@@ -56,28 +79,27 @@ export function Dashboard() {
                     <TextField fullWidth placeholder="Enter priority to search" value={priorityVal} onChange={e => setPriorityVal(e.target.value)} />
                 </div>
 
-                {/* <div>
-                    {
-                        todolist.map((value, index) => {
-                            if (value.title.toLowerCase().includes(search.toLowerCase()))
-                                return <Todo title={value.title} priority={value.priority} is_completed={value.is_completed} id={value.id} updateTodos={getTodos} />
-                            return <></>
-                        })
-                    }
-                </div>
-              */}
                 <div>
-                        {filterTodos().map((value, index) => (
-                            <Todo 
+                    <select onChange={handleSortChange} value={sortCriteria}>
+                        <option value="creationTime">Sort by Creation Time</option>
+                        <option value="deadline">Sort by Deadline</option>
+                        <option value="priority">Sort by Priority</option>
+                    </select>
+
+                    <div>
+                        {filteredAndSortedTodos.map((value) => (
+                            <Todo
                                 key={value.id}
                                 title={value.title}
                                 priority={value.priority}
                                 is_completed={value.is_completed}
                                 id={value.id}
-                                updateTodos={getTodos} 
+                                updateTodos={getTodos}
                             />
                         ))}
                     </div>
+                </div>
+
                 <br />
                 <br />
                 <CreateTodoModal updateTodos={getTodos} />
